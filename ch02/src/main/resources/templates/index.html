@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>2장_텍스트 대화</title>
+    <!-- 브라우저 파비콘 404 에러 방지용 링크 추가 -->
+    <link rel="shortcut icon" href="#">
+    <style>
+        body {
+            width: 800px;
+            margin: 20px auto;
+            font-family: sans-serif;
+        }
+
+        #chat-panel {
+            height: 500px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            white-space: pre-wrap; /* 답변 내 줄바꿈 정상 표현 */
+        }
+
+        textarea {
+            width: 100%;
+            height: 80px;
+            box-sizing: border-box
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            cursor: pointer;
+        }
+    </style>
+
+    <script>
+        async function submit() {
+            const chatPanel = document.getElementById('chat-panel');
+            const question = document.getElementById('question');
+
+            // 새로운 질문 시작 시 대화창 초기화
+            chatPanel.innerText = "";
+
+            try {
+                const response = await fetch('/ai/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Accept': 'text/event-stream'
+                    },
+                    body: new URLSearchParams({
+                        question: question.value
+                    })
+                });
+
+                if (!response.ok) {
+                    chatPanel.innerText = "서버 연결에 실패했습니다.";
+                    return;
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                // 실시간 스트림 답변 처리 및 출력
+                while (true) {
+                    const { done, value } = await reader.read();
+
+                    if (done) {
+                        break;
+                    }
+
+                    const chunk = decoder.decode(value, { stream: true });
+
+                    // 뭉쳐서 들어오는 'data:' 텍스트와 불필요한 줄바꿈(\n)을 정규식으로 완벽 청소
+                    const cleanText = chunk.replace(/data:/g, '').replace(/\n/g, '');
+
+                    // 화면에 순수 텍스트만 누적
+                    chatPanel.innerText += cleanText;
+
+                    // 스크롤 자동 최하단 이동
+                    chatPanel.scrollTop = chatPanel.scrollHeight;
+                }
+                
+            } catch (error) {
+                // 에러가 났을 때 안전하게 잡아주는 catch 블록 복구
+                console.error("통신 장애 발생:", error);
+                chatPanel.innerText = "네트워크 에러가 발생했습니다.";
+            }
+        }
+    </script>
+</head>
+<body>
+    <h3>2장_텍스트 대화</h3>
+
+    <div id="chat-panel"></div>
+    <textarea id="question" placeholder="질문을 입력하세요."></textarea>
+    <button onclick="submit()">질문하기</button>
+</body>
+</html>
