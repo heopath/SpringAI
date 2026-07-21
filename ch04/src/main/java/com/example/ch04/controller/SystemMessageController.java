@@ -1,5 +1,7 @@
 package com.example.ch04.controller;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @Controller
 public class SystemMessageController {
 
-    private final SystemMessageService service;
+	private final SystemMessageService systemMessageService;
 
     @GetMapping("/ai/system-message")
     public String systemMessage() {
@@ -23,9 +25,15 @@ public class SystemMessageController {
 
     @ResponseBody
     @PostMapping("/ai/system-message")
-    public String systemMessage(
-            @RequestParam("review") String question) {
+    public Map<String, String> systemMessage(
+            @RequestParam("review") String review) {
 
-        return service.chat(question);
+        String answer =
+                systemMessageService.chat(review);
+
+        return Map.of(
+                "answer",
+                answer
+        );
     }
 }
