@@ -15,20 +15,35 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Controller
 public class ListOutputConverterController {
-	
-	ListOutputConverterService listOutputConverterService;
-	
-	@GetMapping("/ai/list-output-converter")
-	public String listOutputConverter() {
-		return "/list-output-converter";
-	}
-	
-	@ResponseBody
-	@PostMapping("/ai/list-output-converter")
-	public List<String> listOutputConverter(@RequestParam("city") String city) {
-		
-		List<String> answerList = listOutputConverterService.convertlowLevel(city);
 
-		return answerList;
-	}
+    private final ListOutputConverterService
+            listOutputConverterService;
+
+    @GetMapping("/ai/list-output-converter")
+    public String listOutputConverter() {
+
+        return "/list-output-converter";
+    }
+
+
+    // Low Level
+    @ResponseBody
+    @PostMapping("/ai/list-output-converter")
+    public List<String> listOutputConverter(
+            @RequestParam("city") String city) {
+
+        return listOutputConverterService
+                .convertLowLevel(city);
+    }
+
+
+    // High Level
+    @ResponseBody
+    @PostMapping("/ai/list-output-converter/high")
+    public List<String> listOutputConverterHigh(
+            @RequestParam("city") String city) {
+
+        return listOutputConverterService
+                .convertHighLevel(city);
+    }
 }
