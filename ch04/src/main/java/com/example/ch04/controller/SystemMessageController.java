@@ -32,7 +32,7 @@ public class SystemMessageController {
                 systemMessageService.chat(review);
 
         return Map.of(
-                "answer",
+        		"content",
                 answer
         );
     }
