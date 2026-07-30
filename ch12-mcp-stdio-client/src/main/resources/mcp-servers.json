@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "ch12-mcp-stdio-server": {
+      "command": "java",
+      "args": [
+        "-jar",
+        "C:/Users/GGG/Desktop/Workspace/SpringAI/ch12-mcp-stdio-server/build/libs/ch12-mcp-stdio-server-0.0.1-SNAPSHOT.jar"
+      ]
+    }
+  }
+}
